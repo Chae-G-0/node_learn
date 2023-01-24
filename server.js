@@ -2,8 +2,8 @@ const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({ extended: true }));
-
 const MongoClient = require("mongodb").MongoClient;
+app.set("view engine", "ejs");
 
 let db;
 MongoClient.connect(
@@ -11,11 +11,14 @@ MongoClient.connect(
   function (error, client) {
     if (error) return console.log(error);
 
-    db = client.db('node_learn')
+    db = client.db("node_learn");
 
-    db.collection('post').insertOne({_id:100, name: "kim", age:28}, function (erroe, res) {
-      console.log('저장완료')
-    });
+    db.collection("post").insertOne(
+      { _id: 100, name: "kim", age: 28 },
+      function (erroe, res) {
+        console.log("저장완료");
+      }
+    );
 
     app.listen("8080", function () {
       console.log("listening on 8080");
@@ -32,6 +35,27 @@ app.get("/write", function (req, res) {
 });
 
 app.post("/add", function (req, res) {
-  res.send("ok");
-  console.log(req.body.title);
+  res.send("전송완료");
+  db.collection("counter").findOne(
+    { name: "게시물갯수" },
+    function (error, result) {
+      console.log(result.totalPost);
+      let 총게시물갯수 = result.totalPost;
+      db.collection("post").insertOne(
+        { _id: 총게시물갯수 + 1, title: req.body.title, date: req.body.date },
+        function (error, res) {
+          console.log("저장함");
+        }
+      );
+    }
+  );
+});
+
+app.get("/list", function (req, res) {
+  db.collection("post")
+    .find()
+    .toArray(function (error, result) {
+      console.log(result);
+      res.render("list.ejs", { posts: result });
+    });
 });
