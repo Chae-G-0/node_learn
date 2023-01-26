@@ -41,10 +41,21 @@ app.post("/add", function (req, res) {
     function (error, result) {
       console.log(result.totalPost);
       let 총게시물갯수 = result.totalPost;
+
       db.collection("post").insertOne(
         { _id: 총게시물갯수 + 1, title: req.body.title, date: req.body.date },
         function (error, res) {
           console.log("저장함");
+
+          db.collection("counter").updateOne(
+            { name: "게시물갯수" },
+            { $inc: { totalPost: 1 } },
+            function (error, result) {
+              if (error) {
+                return console.log(error);
+              }
+            }
+          );
         }
       );
     }
@@ -58,4 +69,13 @@ app.get("/list", function (req, res) {
       console.log(result);
       res.render("list.ejs", { posts: result });
     });
+});
+
+app.delete("/delete", function (req, res) {
+  console.log(req.body);
+  req.body._id = parseInt(req.body._id);
+  db.collection("post").deleteOne(req.body, function (erroe, result) {
+    console.log("삭제완료");
+    res.status(200).send({ message: "성공했습니다." });
+  });
 });
