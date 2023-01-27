@@ -4,6 +4,7 @@ const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({ extended: true }));
 const MongoClient = require("mongodb").MongoClient;
 app.set("view engine", "ejs");
+app.use("/public", express.static("public"));
 
 let db;
 MongoClient.connect(
@@ -13,13 +14,6 @@ MongoClient.connect(
 
     db = client.db("node_learn");
 
-    db.collection("post").insertOne(
-      { _id: 100, name: "kim", age: 28 },
-      function (erroe, res) {
-        console.log("저장완료");
-      }
-    );
-
     app.listen("8080", function () {
       console.log("listening on 8080");
     });
@@ -27,11 +21,11 @@ MongoClient.connect(
 );
 
 app.get("/", function (req, res) {
-  res.sendFile(__dirname + "/index.html");
+  res.sendFile(__dirname + "index.ejs");
 });
 
 app.get("/write", function (req, res) {
-  res.sendFile(__dirname + "/write.html");
+  res.sendFile(__dirname + "write.ejs");
 });
 
 app.post("/add", function (req, res) {
@@ -78,4 +72,14 @@ app.delete("/delete", function (req, res) {
     console.log("삭제완료");
     res.status(200).send({ message: "성공했습니다." });
   });
+});
+
+app.get("/detail/:id", function (req, res) {
+  db.collection("post").findOne(
+    { _id: parseInt(req.params.id) },
+    function (error, result) {
+      console.log(result);
+      res.render("detail.ejs", { data: result });
+    }
+  );
 });
