@@ -16,7 +16,6 @@
     <title>Hello, world!</title>
   </head>
   <body>
-
     <%- include('nav.html') %>
 
     <h2 class="ml-2 my-3 text-center">서버에서 가져온 할 일 리스트</h2>
@@ -27,7 +26,12 @@
           <p>글 번호 : <%= posts[i]._id %></p>
           <h4>할일 제목 : <%= posts[i].title %></h4>
           <p>할일 마감날짜 : <%= posts[i].date %></p>
-          <button class="btn btn-danger delete" data-id="<%= posts[i]._id %>">삭제</button>
+          <button class="btn btn-danger delete" data-id="<%= posts[i]._id %>">
+            삭제
+          </button>
+          <button class="btn btn-danger edit" data-id="<%= posts[i]._id %>">
+            수정
+          </button>
         </li>
         <% } %>
       </ul>
