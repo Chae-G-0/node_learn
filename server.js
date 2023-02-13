@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
@@ -10,7 +11,7 @@ app.use("/public", express.static("public"));
 
 let db;
 MongoClient.connect(
-  "mongodb+srv://gy1024:rkdud4020@cluster0.oemqahq.mongodb.net/node_learn?retryWrites=true&w=majority",
+  process.env.DB_URL,
   function (error, client) {
     if (error) return console.log(error);
 
